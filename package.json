@@ -1,0 +1,17 @@
+{
+  "name": "getstarted",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo --live --verbose --port 3000 --open"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aframe": "^0.3.1"
+  },
+  "devDependencies": {
+    "budo": "^9.2.1"
+  }
+}
