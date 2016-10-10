@@ -4,15 +4,96 @@
     <meta charset="utf-8">
     <title>Hello, World! - A-Frame</title>
     <meta name="description" content="Hello, World! - A-Frame">
-    <script src="https://aframe.io/releases/0.3.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/aframevr/aframe/master/dist/aframe.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/ngokevin/kframe/master/dist/kframe.min.js"></script>
+    <script type="text/javascript">
+      AFRAME.registerComponent('my', {
+        init: function () {
+          console.log('Hello', this, arguments  )
+        }
+      });
+    </script>
   </head>
   <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
+    <a-scene fog="type: linear; color: #f5f5f5; far: 300; near: 0" fly>
+      <a-assets>
+        <a-asset-item id="my-obj" src="models/chr_old.obj"></a-asset-item>
+        <a-asset-item id="my-mtl" src="models/chr_old.mtl"></a-asset-item>
+
+        <a-asset-item id="gun-obj" src="models/M4A1/M4A1.obj"></a-asset-item>
+        <a-asset-item id="gun-mtl" src="models/M4A1/M4A1.mtl"></a-asset-item>
+      </a-assets>
+
+      <a-entity>
+        <a-box></a-box>
+        <a-animation begin="click" dur="1000" attribute="position" from="0 0 0" to="10 0 0" repeat="infinite" direction="alternate"></a-animation>
+      </a-entity>
+
+      <a-camera>
+        <a-cursor id="cursor">
+        <a-entity id="score-board" text="text: Score: 0" scale=".2 .2 .2" material="color: #66E1B4" position="-.7 .7 0"></a-entity>
+        <a-obj-model src="#gun-obj" mtl="#gun-mtl" scale=".1 .1 .1" position="1 -.5 -.2"></a-obj-model>
+      </a-camera>
+
+      <a-sky color="rgb(253, 255, 242)"></a-sky>
     </a-scene>
+
+    <script>
+      const scene = document.querySelector('a-scene')
+      let score = 0
+
+      updateScoreBoard()
+
+      function updateScoreBoard () {
+        const camera = document.querySelector('#score-board')
+
+        camera.setAttribute('text', 'text', `Score: ${score}`)
+      }
+
+      AFRAME.registerComponent('old-man', {
+        init: function () {
+          this.el.setAttribute('scale', '.1 .1 .1')
+          this.el.setAttribute('src', '#my-obj')
+          this.el.setAttribute('mtl', '#my-mtl')
+          this.el.addEventListener('click', this.kill.bind(this))
+        },
+
+        kill: function () {
+          this.el.setAttribute('animation', `
+            property: scale;
+            dur: 100;
+            from: .1 .1 .1;
+            to: 0 0 0;
+          `)
+          // scene.remove(this.el)
+          score++
+
+          updateScoreBoard()
+        }
+      })
+
+      function generateOldMan () {
+        const x = Math.random() * 100 - 5
+        const z = Math.random() * 100
+
+        const oldMan = document.createElement('a-obj-model')
+        oldMan.setAttribute('old-man', '')
+        oldMan.setAttribute('position', `${x} 0 -${z}`)
+        scene.appendChild(oldMan)
+      }
+
+      setInterval(() => {
+        generateOldMan()
+      }, 1000)
+
+      // const scene = document.querySelector('a-scene')
+      //
+      // for (let i = 0; i < 10; i = i + 2) {
+      //   const newEntity = document.createElement('a-box')
+      //   newEntity.setAttribute('position', `0 0 -${i}`)
+      //   scene.appendChild(newEntity)
+      // }
+
+    </script>
   </body>
 </html>
